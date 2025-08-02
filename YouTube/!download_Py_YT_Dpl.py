@@ -1,7 +1,8 @@
 import yt_dlp
+import os
 
 
-def download(link, name: str):
+def download(link, folder: str, name: str):
     # ydl_opts = {'outtmpl': name}
     # title, uploader, duration, view_count, like_count, resolution, ext
     with yt_dlp.YoutubeDL() as ydl:
@@ -11,7 +12,8 @@ def download(link, name: str):
         print(f"Duration: {info['duration']} sec.")
     author = list(info['uploader'].split())[0:2]
     ydl_opts = {
-        'outtmpl': f"{info['title']}--{' '.join(author)}",
+        'merge_output_format': 'mp4',
+        'outtmpl': f"{folder}/{info['title']}_{' '.join(author)}.mp4",
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([link])
@@ -23,6 +25,8 @@ f.close()
 n = len(lines)
 index = 0
 base_name = "video"
+out_folder = "download"
+os.makedirs(out_folder, exist_ok=True)  # Создаёт папку, если её нет
 for i in range(n):
     s = lines[i].strip()
-    download(s, f"{base_name}_{i}")
+    download(s, out_folder, f"{base_name}_{i}")
